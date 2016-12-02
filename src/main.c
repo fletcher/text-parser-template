@@ -28,6 +28,14 @@
 
 #define kBUFFERSIZE 4096	// How many bytes to read at a time
 
+// Base parser function declarations
+#include "parser.h"
+
+void *ParseAlloc();
+void Parse();
+void ParseFree();
+
+
 DString * stdin_buffer() {
 	/* Read from stdin and return a GString *
 		`buffer` will need to be freed elsewhere */
@@ -45,6 +53,7 @@ DString * stdin_buffer() {
 
 	return buffer;
 }
+
 
 DString * scan_file(char * fname) {
 	/* Read from stdin and return a GString *
@@ -70,6 +79,28 @@ DString * scan_file(char * fname) {
 	return buffer;
 }
 
-int main( int argc, char** argv ) {
-	/* Make your program do whatever you want */
+
+int main(int argc, char** argv) {
+	DString * buffer = NULL;
+
+	if (argc > 1) {
+		buffer = scan_file(argv[1]);
+	} else {
+		buffer = stdin_buffer();
+	}
+
+	if (buffer == NULL) {
+		fprintf(stderr, "Error reading input.\n");
+		exit(0);
+	}
+
+	void* pParser = ParseAlloc (malloc);
+
+	Parse (pParser, INTEGER, 15);
+	Parse (pParser, DIVIDE, 0);
+	Parse (pParser, INTEGER, 5);
+	Parse (pParser, 0, 0);
+
+	ParseFree(pParser, free);
+	d_string_free(buffer, true);
 }
