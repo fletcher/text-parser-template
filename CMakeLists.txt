@@ -67,6 +67,11 @@ add_custom_command(
 	DEPENDS ${PROJECT_BINARY_DIR}/lemon/lemon
 )
 
+add_custom_command(
+	OUTPUT ${PROJECT_BINARY_DIR}/lexer.c
+	COMMAND re2c ${PROJECT_SOURCE_DIR}/src/lexer.re > ${PROJECT_BINARY_DIR}/lexer.c
+	WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+)
 
 # =================
 # Macro Definitions
@@ -332,6 +337,7 @@ endif (WIN32)
 	add_executable(test_parser
 		src/main.c
 		parser.c
+		lexer.c
 		src/d_string.c
 		${header_files}
 	)

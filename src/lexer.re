@@ -2,7 +2,7 @@
 
 	Parser-Template -- Boilerplate parser example using re2c lexer and lemon parser.
 
-	@file parser.y
+	@file lexer.re
 
 	@brief 
 
@@ -52,60 +52,55 @@
 
 */
 
+#include "lexer.h"
+#include "parser.h"
 
-//
-// Language grammar here
-//
+// Basic scanner struct
 
-%token_type {int}
-
-
-%left PLUS MINUS.
-%left DIVIDE TIMES.
-
-main	::= ins.
-
-ins		::= ins in.
-ins		::= in.
-
-in		::= program NEWLINE.
-in		::= program.
-
-program ::= expr(A).					{ fprintf(stdout, "Result = %d\n", A); }
-
-expr(A)	::= PAREN_L expr(B) PAREN_R.	{ A = B; }
-
-expr(A) ::= expr(B) DIVIDE expr(C).		{ A = B / C; }
-expr(A) ::= expr(B) TIMES expr(C).		{ A = B * C; }
-expr(A) ::= expr(B) PLUS expr(C).		{ A = B + C; }
-expr(A) ::= expr(B) MINUS expr(C).		{ A = B - C; }
-
-expr(A) ::= INTEGER(B). { A = B; }
+#define YYCTYPE		char
+#define YYCURSOR	s->cur
+#define YYMARKER	s->ptr
 
 
-//
-// Additional Configuration
-//
+int scan(Scanner * s, char * stop) {
 
-%include {
-	#include <assert.h>
-	#include <stdio.h>
-	#include <stdlib.h>
+	scan:
 
-	#include "parser.h"
+	if (s->cur >= stop) {
+		return 0;
+	}
+
+	s->start = s->cur;
+
+	/*!re2c
+		re2c:yyfill:enable = 0;
+
+		PLUS	= '+';
+		MINUS	= '-';
+		DIVIDE	= '/';
+		TIMES	= '*';
+
+		PAREN_L	= '(';
+		PAREN_R	= ')';
+
+		INTEGER = [0-9]+;
+
+		NEWLINE	= '\n';
+		WHITESPACE = [ \t]+;
+
+		PLUS	{ return PLUS; }
+		MINUS	{ return MINUS; }
+		DIVIDE	{ return DIVIDE; }
+		TIMES	{ return TIMES; }
+
+		PAREN_L	{ return PAREN_L; }
+		PAREN_R	{ return PAREN_R; }
+
+		INTEGER { return INTEGER; }
+		
+		NEWLINE	{ return NEWLINE; }
+
+		// Skip over whitespace
+		WHITESPACE	{ goto scan; }
+	*/
 }
-
-
-// Improved error messages for debugging:
-//	http://stackoverflow.com/questions/11705737/expected-token-using-lemon-parser-generator
-
-// %syntax_error { 
-// 	int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
-// 	for (int i = 0; i < n; ++i) {
-// 		int a = yy_find_shift_action(yypParser, (YYCODETYPE)i);
-// 		if (a < YYNSTATE + YYNRULE) {
-// 			printf("expected token: %s\n", yyTokenName[i]);
-// 		}
-// 	}
-// }
-
