@@ -8,10 +8,10 @@ cmake_minimum_required (VERSION 2.6)
 set (My_Project_Title "Parser-Template")
 set (My_Project_Description "Boilerplate parser example using re2c lexer and lemon parser.")
 set (My_Project_Author "Fletcher T. Penney")
-set (My_Project_Revised_Date "2016-12-03")
+set (My_Project_Revised_Date "2016-12-05")
 set (My_Project_Version_Major 1)
-set (My_Project_Version_Minor 0)
-set (My_Project_Version_Patch 0)
+set (My_Project_Version_Minor 1)
+set (My_Project_Version_Patch 1)
 
 set (My_Project_Version "${My_Project_Version_Major}.${My_Project_Version_Minor}.${My_Project_Version_Patch}")
 
@@ -339,6 +339,7 @@ endif (WIN32)
 		parser.c
 		lexer.c
 		src/d_string.c
+		src/token.c
 		${header_files}
 	)
 # 

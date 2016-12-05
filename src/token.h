@@ -2,7 +2,7 @@
 
 	Parser-Template -- Boilerplate parser example using re2c lexer and lemon parser.
 
-	@file parser.y
+	@file token.h
 
 	@brief 
 
@@ -53,64 +53,36 @@
 */
 
 
-//
-// Language grammar here
-//
+#ifndef TOKEN_PARSER_TEMPLATE_H
+#define TOKEN_PARSER_TEMPLATE_H
 
-%token_type { token * }
+struct token {
+	unsigned short		type;
+	size_t				start;
+	size_t				len;
 
-%extra_argument { token ** root }
+	struct token *		next;
+	struct token *		prev;
+	struct token *		child;
+};
 
-
-doc			::= metas(A).					{ *root = token_new_parent(A, 1, NULL); }
-
-// Documentation suggests we should do metas ::= metas meta.
-// But this builds the chain in reverse order.
-metas(A)	::= meta(B) metas(C).			{ A = B; B->next = C; }
-metas(A)	::= meta(B).					{ A = B; }
-
-meta(A)		::= key(B) colon value(C) eol.	{ B->next = C; A = token_new_parent(B, 2, NULL); }
-
-colon		::= sp MARKER_COLON.
-colon		::= MARKER_COLON.
-
-eol 		::= sp TEXT_NEWLINE.
-eol 		::= TEXT_NEWLINE.
-
-key(A)		::= sp TEXT_PLAIN(B).			{ A = B; }
-key(A)		::= TEXT_PLAIN(B).				{ A = B; }
-
-value(A)	::= sp TEXT_PLAIN(B).			{ A = B; }
-value(A)	::= TEXT_PLAIN(B).				{ A = B; }
-
-sp			::= sp TEXT_WHITESPACE.
-sp			::= TEXT_WHITESPACE.
+typedef struct token token;
 
 
-//
-// Additional Configuration
-//
+/// Get pointer to a new token
+token * token_new(unsigned short type, size_t start, size_t len, token * prev);
 
-%include {
-	#include <assert.h>
-	#include <stdio.h>
-	#include <stdlib.h>
+/// Create a parent for a chain of tokens
+token * token_new_parent(token * child, unsigned short type, token * prev);
 
-	#include "parser.h"
-	#include "token.h"
-}
+/// Free token
+void token_free(token * t);
 
+/// Free token tree
+void token_tree_free(token * t);
 
-// Improved error messages for debugging:
-//	http://stackoverflow.com/questions/11705737/expected-token-using-lemon-parser-generator
+/// Describe the contents of the token tree
+void token_tree_describe(token * t, char * string);
 
-// %syntax_error { 
-// 	int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
-// 	for (int i = 0; i < n; ++i) {
-// 		int a = yy_find_shift_action(yypParser, (YYCODETYPE)i);
-// 		if (a < YYNSTATE + YYNRULE) {
-// 			printf("expected token: %s\n", yyTokenName[i]);
-// 		}
-// 	}
-// }
+#endif
 

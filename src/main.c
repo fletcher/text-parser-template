@@ -27,6 +27,7 @@
 
 #include "d_string.h"
 #include "lexer.h"
+#include "token.h"
 
 #define kBUFFERSIZE 4096	// How many bytes to read at a time
 
@@ -60,7 +61,7 @@ DString * stdin_buffer() {
 
 
 DString * scan_file(char * fname) {
-	/* Read from stdin and return a GString *
+	/* Read from a file and return a GString *
 		`buffer` will need to be freed elsewhere */
 
 	char chunk[kBUFFERSIZE];
@@ -88,13 +89,13 @@ int main(int argc, char** argv) {
 	DString * buffer = NULL;
 
 	if (argc > 1) {
-		// Read file
+		// Read file into buffer
 		buffer = scan_file(argv[1]);
 	} else {
 		// Default string if no file to parse
-		buffer = d_string_new("(5 + 3) * (27 / 3)\n((5 + 3) * (27 / 3) * (5 + 3) * (27 / 3))\n");
+		buffer = d_string_new("foo-ball:bar bat\n a : b \n\tc     :\td\n");
 
-		// Read from stdin
+		// Read from stdin into buffer
 		// buffer = stdin_buffer();
 	}
 
@@ -114,34 +115,56 @@ int main(int argc, char** argv) {
 	// Where do we stop parsing?
 	char * stop = buffer->str + buffer->currentStringLength;
 
-	int val;			// Value of INTEGER
-	char * substring;	// Substring of buffer to convert to INTEGER value
-	size_t len;			// len of INTEGER token
-	int token;			// TOKEN type
+	int type;				// TOKEN type
+	token * t;				// Create tokens for incorporation
+
+	token * root;			// Store the final parse tree here
+
+	char * last_stop = buffer->str;	// Remember where last token ended
 
 	do {
-		token = scan(&s, stop);
+		// Scan for next token (type of 0 means there is nothing left);
+		type = scan(&s, stop);
 
-		fprintf(stderr, "token %d (%d/%d)\n", token, (int)(s.start - buffer->str), (int)(s.cur - buffer->str));
-		
-		if (token == INTEGER) {
-			len = s.cur - s.start + 1;
-			
-			substring = malloc(len);
-			strncpy(substring, s.start, len);
-			substring[len] = '\0';
+		if (type && s.start != last_stop) {
+			// We skipped characters (and type != 0)
 
-			val = atoi(substring);
-			free(substring);
-			Parse(pParser, token, val);
-		} else {
-			Parse(pParser, token, 0);
+			// Create a default token for the skipped characters
+			t = token_new(TEXT_PLAIN, (size_t)(last_stop - buffer->str), (size_t)(s.start - last_stop), NULL);
+			// fprintf(stderr, "token %d (%lu:%lu)\n", t->type,  t->start, t->len);
+
+			// Send token to lemon for parsing
+			Parse(pParser, TEXT_PLAIN, t, &root);
 		}
-	} while (token != 0);
 
-	// End the parse and clean up
-	Parse(pParser, 0, 0);
+		switch (type) {
+			case TEXT_PLAIN:
+				// Create token and parse it -- these will be incorporated into the final token tree
+				t = token_new(type, (size_t)(s.start - buffer->str), (size_t)(s.cur - s.start), NULL);
+				// fprintf(stderr, "token %d (%lu:%lu)\n", t->type,  t->start, t->len);
+				break;
+			default:
+				// No tokens needed by parser for these types
+				t = NULL;
+				// fprintf(stderr, "token %d (%lu:%lu)\n", type, (size_t)(s.start - buffer->str), (size_t)(s.cur - s.start));
+				break;
+		}
 
+		// Send token to lemon for parsing
+		Parse(pParser, type, t, &root);
+
+		// Remember where we left off to detect skipped characters
+		last_stop = s.cur;
+	} while (type != 0);	// 0 means we have finished with the input
+
+	if (root == NULL) {
+		fprintf(stderr, "No result.\n");
+	} else {
+		token_tree_describe(root, buffer->str);
+	}
+
+	// Clean up
 	ParseFree(pParser, free);
 	d_string_free(buffer, true);
+	token_tree_free(root);
 }
