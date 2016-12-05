@@ -5,13 +5,13 @@ cmake_minimum_required (VERSION 2.6)
 # Define Our Project
 # ==================
 
-set (My_Project_Title "Parser-Template")
-set (My_Project_Description "Boilerplate parser example using re2c lexer and lemon parser.")
+set (My_Project_Title "Text-Parser-Template")
+set (My_Project_Description "Boilerplate text parsing example using re2c lexer and lemon parser.")
 set (My_Project_Author "Fletcher T. Penney")
 set (My_Project_Revised_Date "2016-12-05")
 set (My_Project_Version_Major 1)
 set (My_Project_Version_Minor 1)
-set (My_Project_Version_Patch 1)
+set (My_Project_Version_Patch 2)
 
 set (My_Project_Version "${My_Project_Version_Major}.${My_Project_Version_Minor}.${My_Project_Version_Patch}")
 
@@ -47,13 +47,6 @@ include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/lemon)
 
-
-#configure_file(
-#	${PROJECT_SOURCE_DIR}/src/parser.y
-#	${PROJECT_BINARY_DIR}/parser.y
-#	COPYONLY
-#)
-
 file(
 	COPY
 	${PROJECT_SOURCE_DIR}/src/parser.y
@@ -72,6 +65,7 @@ add_custom_command(
 	COMMAND re2c ${PROJECT_SOURCE_DIR}/src/lexer.re > ${PROJECT_BINARY_DIR}/lexer.c
 	WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 )
+
 
 # =================
 # Macro Definitions
@@ -188,10 +182,16 @@ configure_file (
 # src_files are the primary files, and will be included in doxygen documentation
 set(src_files
 	parser.c
+	lexer.c
+	src/d_string.c
+	src/token.c
 )
 
 # Primary header files, also for doxygen documentation
 set(header_files
+	src/d_string.h
+	src/lexer.h
+	src/token.h
 )
 
 # Public headers, will be installed in 'include'
@@ -201,11 +201,9 @@ set(public_header_files
 
 # Utility source files will not be included in doxygen
 set(src_utility_files
-#	src/d_string.c
 )
 
 set(header_utility_files
-#	src/d_string.h
 	${PROJECT_BINARY_DIR}/version.h
 )
 
@@ -333,19 +331,18 @@ endif (WIN32)
 # SET_TARGET_PROPERTIES(libFOO PROPERTIES PREFIX "")
 
 # Create a command-line app?
-# if (NOT DEFINED TEST)
+if (NOT DEFINED TEST)
 	add_executable(test_parser
 		src/main.c
-		parser.c
-		lexer.c
-		src/d_string.c
-		src/token.c
+		${src_files}
 		${header_files}
+		${src_utility_files}
+		${header_utility_files}
 	)
 # 
 #	Link the library to the app?
 #	target_link_libraries(main libFOO)
-# endif()
+endif()
 
 # Xcode settings for fat binaries
 # set_target_properties(libFOO PROPERTIES XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH "NO")

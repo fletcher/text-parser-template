@@ -99,10 +99,11 @@ int asprintf( char **sptr, char *fmt, ... )
 
 /* DString */
 
-#define kStringBufferStartingSize 1024
-#define kStringBufferGrowthMultiplier 2
+#define kStringBufferStartingSize 1024			//!< Default size of buffer capacity
+#define kStringBufferGrowthMultiplier 2			//!< Multiply capacity by this factor when more space is needed
 
-DString* d_string_new(const char *startingString)
+/// Create a new dynamic string
+DString* d_string_new(const char * startingString)
 {
 	DString* newString = malloc(sizeof(DString));
 
@@ -124,7 +125,9 @@ DString* d_string_new(const char *startingString)
 	return newString;
 }
 
-char* d_string_free(DString* ripString, bool freeCharacterData)
+
+/// Free dynamic string
+char* d_string_free(DString * ripString, bool freeCharacterData)
 {	
 	if (ripString == NULL)
 		return NULL;
@@ -144,7 +147,9 @@ char* d_string_free(DString* ripString, bool freeCharacterData)
 	return returnedString;
 }
 
-static void ensureStringBufferCanHold(DString* baseString, size_t newStringSize)
+
+/// Ensure that dynamic string has specified capacity
+static void ensureStringBufferCanHold(DString * baseString, size_t newStringSize)
 {
 	size_t newBufferSizeNeeded = newStringSize + 1;
 	if (newBufferSizeNeeded > baseString->currentStringBufferSize)
@@ -170,11 +175,14 @@ static void ensureStringBufferCanHold(DString* baseString, size_t newStringSize)
 	}
 }
 
-void d_string_append(DString* baseString, char* appendedString)
+
+/// Append null-terminated string to end of dynamic string
+void d_string_append(DString * baseString, const char * appendedString)
 {
-	if ((appendedString != NULL) && (strlen(appendedString) > 0))
+	size_t appendedStringLength = strlen(appendedString);
+
+	if ((appendedString != NULL) && (appendedStringLength > 0))
 	{
-		size_t appendedStringLength = strlen(appendedString);
 		size_t newStringLength = baseString->currentStringLength + appendedStringLength;
 		ensureStringBufferCanHold(baseString, newStringLength);
 
@@ -184,7 +192,9 @@ void d_string_append(DString* baseString, char* appendedString)
 	}
 }
 
-void d_string_append_c(DString* baseString, char appendedCharacter)
+
+/// Append single character to end of dynamic string
+void d_string_append_c(DString * baseString, char appendedCharacter)
 {	
 	size_t newSizeNeeded = baseString->currentStringLength + 1;
 	ensureStringBufferCanHold(baseString, newSizeNeeded);
@@ -194,7 +204,9 @@ void d_string_append_c(DString* baseString, char appendedCharacter)
 	baseString->str[baseString->currentStringLength] = '\0';
 }
 
-void d_string_append_c_array(DString *baseString, const char * appendedChars, size_t bytes)
+
+/// Append array of characters to end of dynamic string
+void d_string_append_c_array(DString * baseString, const char * appendedChars, size_t bytes)
 {
 	size_t newSizeNeeded = baseString->currentStringLength + bytes;
 	ensureStringBufferCanHold(baseString, newSizeNeeded);
@@ -205,7 +217,9 @@ void d_string_append_c_array(DString *baseString, const char * appendedChars, si
 	baseString->str[baseString->currentStringLength] = '\0';
 }
 
-void d_string_append_printf(DString* baseString, char* format, ...)
+
+/// Append to end of dynamic string using format specifier
+void d_string_append_printf(DString * baseString, const char * format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -220,11 +234,14 @@ void d_string_append_printf(DString* baseString, char* format, ...)
 	va_end(args);
 } 
 
-void d_string_prepend(DString* baseString, char* prependedString)
+
+/// Prepend null-terminated string to end of dynamic string
+void d_string_prepend(DString * baseString, const char * prependedString)
 {
-	if ((prependedString != NULL) && (strlen(prependedString) > 0))
+	size_t prependedStringLength = strlen(prependedString);
+
+	if ((prependedString != NULL) && (prependedStringLength > 0))
 	{
-		size_t prependedStringLength = strlen(prependedString);
 		size_t newStringLength = baseString->currentStringLength + prependedStringLength;
 		ensureStringBufferCanHold(baseString, newStringLength);
 
@@ -235,14 +252,17 @@ void d_string_prepend(DString* baseString, char* prependedString)
 	}
 }
 
-void d_string_insert(DString* baseString, size_t pos, const char * insertedString)
+
+/// Insert null-terminated string inside dynamic string
+void d_string_insert(DString * baseString, size_t pos, const char * insertedString)
 {
-	if ((insertedString != NULL) && (strlen(insertedString) > 0))
+	size_t insertedStringLength = strlen(insertedString);
+
+	if ((insertedString != NULL) && (insertedStringLength > 0))
 	{
 		if (pos > baseString->currentStringLength)
 			pos = baseString->currentStringLength;
 		
-		size_t insertedStringLength = strlen(insertedString);
 		size_t newStringLength = baseString->currentStringLength + insertedStringLength;
 		ensureStringBufferCanHold(baseString, newStringLength);
 		
@@ -254,7 +274,9 @@ void d_string_insert(DString* baseString, size_t pos, const char * insertedStrin
 	}
 }
 
-void d_string_insert_c(DString* baseString, size_t pos, char insertedCharacter)
+
+/// Insert single character inside dynamic string
+void d_string_insert_c(DString * baseString, size_t pos, char insertedCharacter)
 {	
 	if (pos > baseString->currentStringLength)
 		pos = baseString->currentStringLength;
@@ -271,7 +293,8 @@ void d_string_insert_c(DString* baseString, size_t pos, char insertedCharacter)
 }
 
 
-void d_string_insert_printf(DString* baseString, size_t pos, char* format, ...)
+/// Insert inside dynamic string using format specifier
+void d_string_insert_printf(DString * baseString, size_t pos, const char * format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -286,7 +309,9 @@ void d_string_insert_printf(DString* baseString, size_t pos, char* format, ...)
 	va_end(args);
 }
 
-void d_string_erase(DString* baseString, size_t pos, size_t len)
+
+/// Erase portion of dynamic string
+void d_string_erase(DString * baseString, size_t pos, size_t len)
 {
 	if ((pos > baseString->currentStringLength) || (len <= 0))
 		return;
@@ -302,3 +327,4 @@ void d_string_erase(DString* baseString, size_t pos, size_t len)
 	}
 	baseString->str[baseString->currentStringLength] = '\0';
 }
+

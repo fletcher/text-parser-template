@@ -4,7 +4,8 @@
 
 	@file token.c
 
-	@brief 
+	@brief Structure and functions to manage tokens representing portions of a
+	text string.
 
 
 	@author	Fletcher T. Penney
@@ -70,6 +71,8 @@ token * token_new(unsigned short type, size_t start, size_t len, token * prev) {
 	t->prev = prev;
 	t->child = NULL;
 
+	t->tail = t;
+
 	return t;
 }
 
@@ -80,7 +83,10 @@ token * token_new_parent(token * child, unsigned short type, token * prev) {
 	t->child = child;
 	child->prev = NULL;
 
-	if (child->next == NULL) {
+	// Ensure that parent length correctly includes children
+	if (child == NULL) {
+		t->len = 0;
+	} else if (child->next == NULL) {
 		t->len = child->len;
 	} else {
 		while (child->next != NULL)
@@ -90,7 +96,40 @@ token * token_new_parent(token * child, unsigned short type, token * prev) {
 	}
 
 	return t;
- }
+}
+
+
+/// Add a new token to the end of a token chain.  The new token
+/// may or may not also be the start of a chain
+void token_chain_append(token * chain_start, token * t) {
+	if (chain_start == NULL)
+		return;
+
+	// Append t
+	chain_start->tail->next = t;
+	t->prev = chain_start->tail;
+
+	// Adjust tail marker
+	chain_start->tail = t->tail;
+}
+
+
+/// Add a new token to the end of a parent's child
+/// token chain.  The new token may or may not be
+/// the start of a chain.
+void token_append_child(token * parent, token * t) {
+	if (parent == NULL)
+		return;
+
+	if (parent->child == NULL) {
+		// Parent has no children
+		parent->child = t;
+	} else {
+		// Append to to existing child chain
+		token_chain_append(parent->child, t);
+	}
+}
+
 
 /// Free token
 void token_free(token * t) {
@@ -116,9 +155,11 @@ void token_tree_free(token * t) {
 }
 
 
+/// Forward declaration
 void print_token_tree(token * t, unsigned short depth, char * string);
 
 
+/// Print contents of the token based on specified string
 void print_token(token * t, unsigned short depth, char * string) {
 	if (t != NULL) {
 		for (int i = 0; i < depth; ++i)
@@ -137,6 +178,7 @@ void print_token(token * t, unsigned short depth, char * string) {
 }
 
 
+/// Print contents of the token tree based on specified string
 void print_token_tree(token * t, unsigned short depth, char * string) {
 	while (t != NULL) {
 		print_token(t, depth, string);
@@ -146,11 +188,14 @@ void print_token_tree(token * t, unsigned short depth, char * string) {
 }
 
 
+/// Print a description of the token based on specified string
 void token_describe(token * t, char * string) {
 	print_token(t, 0, string);
 }
 
 
+
+/// Print a description of the token tree based on specified string
 void token_tree_describe(token * t, char * string) {
 	fprintf(stderr, "=====>\n");
 	while (t != NULL) {

@@ -4,7 +4,8 @@
 
 	@file lexer.re
 
-	@brief 
+	@brief Description of the regular expressions used to define tokens, 
+	used by re2c to create a lexer/tokenizer.
 
 
 	@author	Fletcher T. Penney
