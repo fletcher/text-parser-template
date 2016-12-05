@@ -69,7 +69,7 @@ doc			::= metas(A).				{ *root = token_new_parent(A, 1, NULL); }
 metas(A)	::= meta(B) metas(C).		{ A = B; B->next = C; }
 metas(A)	::= meta(B).				{ A = B; }
 
-meta(A)		::= key(B) MARKER_COLON value(C) TEXT_NEWLINE . { B->next = C; A = token_new_parent(B, 1, NULL); }
+meta(A)		::= key(B) MARKER_COLON value(C) TEXT_NEWLINE . { B->next = C; A = token_new_parent(B, 2, NULL); }
 
 key(A)		::= TEXT_PLAIN(B).			{ A = B; }
 value(A)	::= TEXT_PLAIN(B).			{ A = B; }
