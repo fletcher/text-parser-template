@@ -79,11 +79,18 @@ int scan(Scanner * s, char * stop) {
 
 		NEWLINE	= '\n';
 
-		TEXT = [a-zA-Z0-9 \t]+;
+		TEXT_TAB = '\t';
+		TEXT_INDENT_SP = ' '{4};
+		TEXT_WHITESPACE = ' '{1,3};
 
-		COLON	{ return MARKER_COLON; }
-		NEWLINE	{ return TEXT_NEWLINE; }
-		TEXT	{ return TEXT_PLAIN; }
+		COLON			{ return MARKER_COLON; }
+		NEWLINE			{ return TEXT_NEWLINE; }
+
+		TEXT_TAB		{ return TEXT_WHITESPACE; }
+		TEXT_INDENT_SP	{ return TEXT_WHITESPACE; }
+		TEXT_WHITESPACE	{ return TEXT_WHITESPACE; }
+
+		//TEXT	{ return TEXT_PLAIN; }
 
 		// Skip over anything else
 		. { goto scan; }

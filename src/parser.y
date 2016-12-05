@@ -62,18 +62,29 @@
 %extra_argument { token ** root }
 
 
-doc			::= metas(A).				{ *root = token_new_parent(A, 1, NULL); }
+doc			::= metas(A).					{ *root = token_new_parent(A, 1, NULL); }
 
 // Documentation suggests we should do metas ::= metas meta.
-// But this build chain in reverse order.
-metas(A)	::= meta(B) metas(C).		{ A = B; B->next = C; }
-metas(A)	::= meta(B).				{ A = B; }
+// But this builds the chain in reverse order.
+metas(A)	::= meta(B) metas(C).			{ A = B; B->next = C; }
+metas(A)	::= meta(B).					{ A = B; }
 
-meta(A)		::= key(B) MARKER_COLON value(C) TEXT_NEWLINE . { B->next = C; A = token_new_parent(B, 2, NULL); }
+meta(A)		::= key(B) colon value(C) eol.	{ B->next = C; A = token_new_parent(B, 2, NULL); }
 
-key(A)		::= TEXT_PLAIN(B).			{ A = B; }
-value(A)	::= TEXT_PLAIN(B).			{ A = B; }
+colon		::= sp MARKER_COLON.
+colon		::= MARKER_COLON.
 
+eol 		::= sp TEXT_NEWLINE.
+eol 		::= TEXT_NEWLINE.
+
+key(A)		::= sp TEXT_PLAIN(B).			{ A = B; }
+key(A)		::= TEXT_PLAIN(B).				{ A = B; }
+
+value(A)	::= sp TEXT_PLAIN(B).			{ A = B; }
+value(A)	::= TEXT_PLAIN(B).				{ A = B; }
+
+sp			::= sp TEXT_WHITESPACE.
+sp			::= TEXT_WHITESPACE.
 
 
 //
