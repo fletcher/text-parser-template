@@ -2,11 +2,11 @@
 
 |            |                           |  
 | ---------- | ------------------------- |  
-| Title:     | Parser-Template        |  
+| Title:     | Text-Parser-Template        |  
 | Author:    | Fletcher T. Penney       |  
 | Date:      | 2016-12-05 |  
 | Copyright: | Copyright © 2016 Fletcher T. Penney.    |  
-| Version:   | 1.1.1      |  
+| Version:   | 1.1.2      |  
 
 
 ## Introduction ##
@@ -57,12 +57,20 @@ Additionally, I wanted to try to start encouraging some "better practices"
 	may or may not work for your needs, but it saves me a bunch of time
 	and headache.
 
+6.	Include "starter" files for [re2c] and [lemon] -- In addition to the
+	basics from my [c-template] template, this version includes basic
+	text parsing functionality using re2c as a lexer/tokenizer, and
+	lemon as a parser.  The goal is to document some tips and tricks
+	that can be useful in creating larger projects.
 
-[tdd]:	https://en.wikipedia.org/wiki/Test-driven_development
-[cmake]:	http://www.cmake.org/
-[CuTest]:	http://cutest.sourceforge.net
-[Doxygen]:	http://www.stack.nl/~dimitri/doxygen/
 
+[tdd]:			https://en.wikipedia.org/wiki/Test-driven_development
+[cmake]:		http://www.cmake.org/
+[CuTest]:		http://cutest.sourceforge.net
+[Doxygen]:		http://www.stack.nl/~dimitri/doxygen/
+[re2c]:			http://re2c.org/index.html
+[lemon]:		https://www.sqlite.org/src/doc/trunk/doc/lemon.html
+[c-template]:	https://github.com/fletcher/c-template
 
 ## How do I use it? ##
 
@@ -81,7 +89,7 @@ to rename your project directory from `new-project` to whatever you desire:
 
 	cd new-project
 
-	git remote add "template" https://github.com/fletcher/c-template.git
+	git remote add "template" https://github.com/fletcher/text-parser-template.git
 
 	git pull template master
 
@@ -104,7 +112,7 @@ framework to get you started.  In all likelihood, all but the most basic
 projects will need some customization.
 
 
-[github]:	https://github.com/fletcher/c-template
+[github]:	https://github.com/fletcher/text-parser-template
 
 
 ## Configuration ##
@@ -241,7 +249,7 @@ some example information for [Doxygen] and [CuTest].
 
 ## License ##
 
-The `c-template` project is released under the MIT License.
+The `parser-template-text` project is released under the MIT License.
 
 GLibFacade.c and GLibFacade.h are from the MultiMarkdown v4 project:
 

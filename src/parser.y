@@ -4,7 +4,7 @@
 
 	@file parser.y
 
-	@brief 
+	@brief Definition of the parser grammar, used by lemon to create a parser.
 
 
 	@author	Fletcher T. Penney

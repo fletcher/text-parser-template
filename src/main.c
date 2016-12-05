@@ -38,8 +38,6 @@ void *ParseAlloc();
 void Parse();
 void ParseFree();
 
-int scan(Scanner * s, char * stop);
-
 
 DString * stdin_buffer() {
 	/* Read from stdin and return a GString *

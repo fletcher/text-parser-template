@@ -1,4 +1,5 @@
 BUILD_DIR = build
+DOC_DIR = documentation
 XCODE_BUILD_DIR = build-xcode
 XCODE_DEBUG_BUILD_DIR = build-xcode-debug
 
@@ -69,10 +70,11 @@ windows-zip-32: $(BUILD_DIR)
 
 # Build the documentation using doxygen
 .PHONY : documentation
-documentation: $(BUILD_DIR)
-	cd $(BUILD_DIR); \
+documentation:
+	-mkdir $(DOC_DIR) 2>/dev/null; \
+	cd $(DOC_DIR); \
 	cmake -DDOCUMENTATION=1 ..; cd ..; \
-	doxygen build/doxygen.conf
+	doxygen $(DOC_DIR)/doxygen.conf
 
 .PHONY : gh-pages
 gh-pages: documentation
