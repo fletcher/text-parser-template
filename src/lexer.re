@@ -75,32 +75,17 @@ int scan(Scanner * s, char * stop) {
 	/*!re2c
 		re2c:yyfill:enable = 0;
 
-		PLUS	= '+';
-		MINUS	= '-';
-		DIVIDE	= '/';
-		TIMES	= '*';
-
-		PAREN_L	= '(';
-		PAREN_R	= ')';
-
-		INTEGER = [0-9]+;
+		COLON	= ':';
 
 		NEWLINE	= '\n';
-		WHITESPACE = [ \t]+;
 
-		PLUS	{ return PLUS; }
-		MINUS	{ return MINUS; }
-		DIVIDE	{ return DIVIDE; }
-		TIMES	{ return TIMES; }
+		TEXT = [a-zA-Z0-9 \t]+;
 
-		PAREN_L	{ return PAREN_L; }
-		PAREN_R	{ return PAREN_R; }
+		COLON	{ return MARKER_COLON; }
+		NEWLINE	{ return TEXT_NEWLINE; }
+		TEXT	{ return TEXT_PLAIN; }
 
-		INTEGER { return INTEGER; }
-		
-		NEWLINE	{ return NEWLINE; }
-
-		// Skip over whitespace
-		WHITESPACE	{ goto scan; }
+		// Skip over anything else
+		. { goto scan; }
 	*/
 }
