@@ -2,7 +2,7 @@
 
 	Parser-Template -- Boilerplate parser example using re2c lexer and lemon parser.
 
-	@file parser.y
+	@file token.h
 
 	@brief 
 
@@ -53,53 +53,36 @@
 */
 
 
-//
-// Language grammar here
-//
+#ifndef TOKEN_PARSER_TEMPLATE_H
+#define TOKEN_PARSER_TEMPLATE_H
 
-%token_type { token * }
+struct token {
+	unsigned short		type;
+	size_t				start;
+	size_t				len;
 
-%extra_argument { token ** root }
+	struct token *		next;
+	struct token *		prev;
+	struct token *		child;
+};
 
-
-doc			::= metas(A).				{ *root = token_new_parent(A, 1, NULL); }
-
-// Documentation suggests we should do metas ::= metas meta.
-// But this build chain in reverse order.
-metas(A)	::= meta(B) metas(C).		{ A = B; B->next = C; }
-metas(A)	::= meta(B).				{ A = B; }
-
-meta(A)		::= key(B) MARKER_COLON value(C) TEXT_NEWLINE . { B->next = C; A = token_new_parent(B, 1, NULL); }
-
-key(A)		::= TEXT_PLAIN(B).			{ A = B; }
-value(A)	::= TEXT_PLAIN(B).			{ A = B; }
+typedef struct token token;
 
 
+/// Get pointer to a new token
+token * token_new(unsigned short type, size_t start, size_t len, token * prev);
 
-//
-// Additional Configuration
-//
+/// Create a parent for a chain of tokens
+token * token_new_parent(token * child, unsigned short type, token * prev);
 
-%include {
-	#include <assert.h>
-	#include <stdio.h>
-	#include <stdlib.h>
+/// Free token
+void token_free(token * t);
 
-	#include "parser.h"
-	#include "token.h"
-}
+/// Free token tree
+void token_tree_free(token * t);
 
+/// Describe the contents of the token tree
+void token_tree_describe(token * t, char * string);
 
-// Improved error messages for debugging:
-//	http://stackoverflow.com/questions/11705737/expected-token-using-lemon-parser-generator
-
-// %syntax_error { 
-// 	int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
-// 	for (int i = 0; i < n; ++i) {
-// 		int a = yy_find_shift_action(yypParser, (YYCODETYPE)i);
-// 		if (a < YYNSTATE + YYNRULE) {
-// 			printf("expected token: %s\n", yyTokenName[i]);
-// 		}
-// 	}
-// }
+#endif
 
