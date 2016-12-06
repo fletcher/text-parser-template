@@ -117,3 +117,7 @@ sp			::= TEXT_WHITESPACE.
 #endif
 }
 
+%syntax_failure {
+	printf("Parser failed to successfully parse.\n");
+}
+
