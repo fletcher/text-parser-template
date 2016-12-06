@@ -104,13 +104,16 @@ sp			::= TEXT_WHITESPACE.
 // Improved error messages for debugging:
 //	http://stackoverflow.com/questions/11705737/expected-token-using-lemon-parser-generator
 
-// %syntax_error { 
-// 	int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
-// 	for (int i = 0; i < n; ++i) {
-// 		int a = yy_find_shift_action(yypParser, (YYCODETYPE)i);
-// 		if (a < YYNSTATE + YYNRULE) {
-// 			printf("expected token: %s\n", yyTokenName[i]);
-// 		}
-// 	}
-// }
+%syntax_error {
+	printf("Parser syntax error.\n");
+#ifndef NDEBUG
+	int n = sizeof(yyTokenName) / sizeof(yyTokenName[0]);
+	for (int i = 0; i < n; ++i) {
+		int a = yy_find_shift_action(yypParser, (YYCODETYPE)i);
+		if (a < YYNSTATE + YYNRULE) {
+			printf("expected token: %s\n", yyTokenName[i]);
+		}
+	}
+#endif
+}
 
