@@ -82,6 +82,8 @@ key(A)		::= TEXT_PLAIN(B).				{ A = B; }
 
 value(A)	::= sp TEXT_PLAIN(B).			{ A = B; }
 value(A)	::= TEXT_PLAIN(B).				{ A = B; }
+// Text with whitespace will be broken up -- put it back together
+value(A)	::= value(B) sp TEXT_PLAIN(C).	{ A = B; A->len = C->start + C->len - B->start; }
 
 sp			::= sp TEXT_WHITESPACE.
 sp			::= TEXT_WHITESPACE.

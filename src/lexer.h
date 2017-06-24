@@ -58,9 +58,10 @@
 /// string.  They can be used to create "tokens" that match
 /// sections of the text with an abstract syntax tree.
 struct Scanner {
-	char * start;		//!< Start of current token
-	char * cur;			//!< Character currently being matched
-	char * ptr;			//!< Used for backtracking by re2c
+	const char * start;		//!< Start of current token
+	const char * cur;		//!< Character currently being matched
+	const char * ptr;		//!< Used for backtracking by re2c
+	const char * ctx;
 };
 
 typedef struct Scanner Scanner;
@@ -68,7 +69,7 @@ typedef struct Scanner Scanner;
 
 /// Scan for the next token
 int scan(
-	Scanner * s,		//!< Pointer to Scanner state structure
-	char * stop			//!< Pointer to position in string at which to stop parsing
+	Scanner * s,			//!< Pointer to Scanner state structure
+	const char * stop		//!< Pointer to position in string at which to stop parsing
 );
 

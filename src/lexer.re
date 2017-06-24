@@ -58,12 +58,13 @@
 
 // Basic scanner struct
 
-#define YYCTYPE		char
-#define YYCURSOR	s->cur
-#define YYMARKER	s->ptr
+#define YYCTYPE			unsigned char
+#define YYCURSOR		s->cur
+#define YYMARKER		s->ptr
+#define YYCTXMARKER		s->ctx
 
 
-int scan(Scanner * s, char * stop) {
+int scan(Scanner * s, const char * stop) {
 
 	scan:
 

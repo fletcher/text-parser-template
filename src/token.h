@@ -119,7 +119,7 @@ void token_tree_free(
 /// Print a description of the token based on specified string
 void token_describe(
 	token * t,							//!< Pointer to token to described
-	char * string						//!< Source string
+	const char * string						//!< Source string
 );
 
 /// Print a description of the token tree based on specified string
