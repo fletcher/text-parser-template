@@ -4,9 +4,9 @@
 | ---------- | ------------------------- |  
 | Title:     | Text-Parser-Template        |  
 | Author:    | Fletcher T. Penney       |  
-| Date:      | 2016-12-05 |  
-| Copyright: | Copyright © 2016 Fletcher T. Penney.    |  
-| Version:   | 1.1.2      |  
+| Date:      | 2017-06-24 |  
+| Copyright: | Copyright © 2016-2017 Fletcher T. Penney.    |  
+| Version:   | 1.2.0      |  
 
 
 ## Introduction ##
