@@ -8,14 +8,14 @@ cmake_minimum_required (VERSION 2.6)
 set (My_Project_Title "Text-Parser-Template")
 set (My_Project_Description "Boilerplate text parsing example using re2c lexer and lemon parser.")
 set (My_Project_Author "Fletcher T. Penney")
-set (My_Project_Revised_Date "2016-12-05")
+set (My_Project_Revised_Date "2017-06-24")
 set (My_Project_Version_Major 1)
-set (My_Project_Version_Minor 1)
-set (My_Project_Version_Patch 2)
+set (My_Project_Version_Minor 2)
+set (My_Project_Version_Patch 0)
 
 set (My_Project_Version "${My_Project_Version_Major}.${My_Project_Version_Minor}.${My_Project_Version_Patch}")
 
-set (My_Project_Copyright_Date "2016")
+set (My_Project_Copyright_Date "2016-2017")
 set (My_Project_Copyright "Copyright © ${My_Project_Copyright_Date} ${My_Project_Author}.")
 
 string(TOUPPER ${My_Project_Title} My_Project_Title_Caps  )
@@ -39,32 +39,6 @@ project (${My_Project_Title})
 include_directories( ${PROJECT_SOURCE_DIR}/src )
 include_directories( ${PROJECT_SOURCE_DIR}/test )
 include_directories(${PROJECT_BINARY_DIR})
-
-
-# ===========================
-# Build Lemon and parser file
-# ===========================
-
-add_subdirectory(${PROJECT_SOURCE_DIR}/lemon)
-
-file(
-	COPY
-	${PROJECT_SOURCE_DIR}/src/parser.y
-	DESTINATION ${PROJECT_BINARY_DIR}
-)
-
-add_custom_command(
-	OUTPUT ${PROJECT_BINARY_DIR}/parser.c
-	COMMAND ${PROJECT_BINARY_DIR}/lemon/lemon ${PROJECT_BINARY_DIR}/parser.y
-	WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-	DEPENDS ${PROJECT_BINARY_DIR}/lemon/lemon
-)
-
-add_custom_command(
-	OUTPUT ${PROJECT_BINARY_DIR}/lexer.c
-	COMMAND re2c ${PROJECT_SOURCE_DIR}/src/lexer.re > ${PROJECT_BINARY_DIR}/lexer.c
-	WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-)
 
 
 # =================
@@ -181,9 +155,9 @@ configure_file (
 
 # src_files are the primary files, and will be included in doxygen documentation
 set(src_files
-	parser.c
-	lexer.c
 	src/d_string.c
+	src/lexer.c
+	src/parser.c
 	src/token.c
 )
 

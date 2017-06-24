@@ -37,6 +37,7 @@
 void *ParseAlloc();
 void Parse();
 void ParseFree();
+void ParseTrace();
 
 
 DString * stdin_buffer() {
@@ -105,6 +106,10 @@ int main(int argc, char** argv) {
 	// Create a parser (for lemon)
 	void* pParser = ParseAlloc (malloc);
 
+#ifndef NDEBUG
+	ParseTrace(stderr, "parse:");
+#endif
+
 	// Create a scanner (for re2c)
 	Scanner s;
 	s.start = buffer->str;
@@ -118,7 +123,7 @@ int main(int argc, char** argv) {
 
 	token * root;			// Store the final parse tree here
 
-	char * last_stop = buffer->str;	// Remember where last token ended
+	const char * last_stop = buffer->str;	// Remember where last token ended
 
 	do {
 		// Scan for next token (type of 0 means there is nothing left);
@@ -132,6 +137,9 @@ int main(int argc, char** argv) {
 			// fprintf(stderr, "token %d (%lu:%lu)\n", t->type,  t->start, t->len);
 
 			// Send token to lemon for parsing
+#ifndef NDEBUG
+			token_describe(t, buffer->str);
+#endif
 			Parse(pParser, TEXT_PLAIN, t, &root);
 		}
 
@@ -142,13 +150,20 @@ int main(int argc, char** argv) {
 				// fprintf(stderr, "token %d (%lu:%lu)\n", t->type,  t->start, t->len);
 				break;
 			default:
-				// No tokens needed by parser for these types
+				// No tokens needed by parser for these types -- only interested in the text values for the final tree
+#ifndef NDEBUG
+				fprintf(stderr, "* (%d) %lu:%lu\n", type, s.start - buffer->str, s.cur - s.start);
+#endif
 				t = NULL;
 				// fprintf(stderr, "token %d (%lu:%lu)\n", type, (size_t)(s.start - buffer->str), (size_t)(s.cur - s.start));
 				break;
 		}
 
 		// Send token to lemon for parsing
+#ifndef NDEBUG
+		token_describe(t, buffer->str);
+#endif
+
 		Parse(pParser, type, t, &root);
 
 		// Remember where we left off to detect skipped characters

@@ -156,11 +156,11 @@ void token_tree_free(token * t) {
 
 
 /// Forward declaration
-void print_token_tree(token * t, unsigned short depth, char * string);
+void print_token_tree(token * t, unsigned short depth, const char * string);
 
 
 /// Print contents of the token based on specified string
-void print_token(token * t, unsigned short depth, char * string) {
+void print_token(token * t, unsigned short depth, const char * string) {
 	if (t != NULL) {
 		for (int i = 0; i < depth; ++i)
 		{
@@ -179,7 +179,7 @@ void print_token(token * t, unsigned short depth, char * string) {
 
 
 /// Print contents of the token tree based on specified string
-void print_token_tree(token * t, unsigned short depth, char * string) {
+void print_token_tree(token * t, unsigned short depth, const char * string) {
 	while (t != NULL) {
 		print_token(t, depth, string);
 
@@ -189,7 +189,7 @@ void print_token_tree(token * t, unsigned short depth, char * string) {
 
 
 /// Print a description of the token based on specified string
-void token_describe(token * t, char * string) {
+void token_describe(token * t, const char * string) {
 	print_token(t, 0, string);
 }
 
